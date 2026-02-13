@@ -1,5 +1,5 @@
 function init() {
-    // 1. Cập nhật Đồng hồ & Ngày tháng (Định dạng: Ngày ... tháng ... năm ...)
+    // 1. Cập nhật Đồng hồ & Ngày tháng (Định dạng: Ngày ... tháng ... năm ...) 
     const updateTime = () => {
         const now = new Date();
         // Hiển thị giờ 24h
@@ -108,3 +108,4 @@ function init() {
 }
 
 window.onload = init;
+
