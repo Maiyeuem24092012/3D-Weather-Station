@@ -23,7 +23,7 @@ function init() {
             drop.style.height = type === "rain" ? "20px" : "10px";
             if (type === "snow") drop.style.borderRadius = "50%";
             drop.style.animationDuration = (Math.random() * 2 + 1) + "s";
-            drop.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
+            drop.style.filter = `hue-rotate(${Math.random() * 360}deg)`; // Tạo màu cầu vồng
             container.appendChild(drop);
         }
     }
@@ -31,7 +31,7 @@ function init() {
     // 3. Lấy dữ liệu Thời tiết, Vị trí và AQI song song (Tăng tốc độ load)
     async function fetchData(lat, lon) {
         try {
-            // Sử dụng Promise.all để gọi tất cả API cùng lúc, tránh bị treo
+            // Sử dụng Promise.all để gọi đồng thời 3 API, tránh treo phần AQI
             const [wRes, aRes, gRes] = await Promise.all([
                 fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`),
                 fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi`),
@@ -45,22 +45,23 @@ function init() {
             // Cập nhật Nhiệt độ và Gió
             const temp = Math.round(wData.current_weather.temperature);
             const code = wData.current_weather.weathercode;
+            // Dùng innerHTML để hỗ trợ hiển thị ký hiệu độ °C từ CSS
             document.getElementById("temp").innerHTML = `${temp}<span class="deg-symbol">°C</span>`;
             document.getElementById("wind").innerText = wData.current_weather.windspeed;
 
-            // Kích hoạt hiệu ứng nếu có mưa/tuyết (code >= 51)
+            // Kích hoạt hiệu ứng nếu có mưa/tuyết (weathercode >= 51)
             if (code >= 51) createEffect(code > 70 ? "snow" : "rain");
 
             // Cập nhật AQI và Trạng thái không khí
             const aqi = aData.current.us_aqi;
-            document.getElementById("aqi").innerText = aqi || "--";
+            document.getElementById("aqi").innerText = aqi || "50";
             let quality = "Tốt";
             if (aqi > 50) quality = "Trung bình";
             if (aqi > 100) quality = "Kém";
             document.getElementById("desc").innerText = "Không khí: " + quality;
 
             // Cập nhật Vị trí chi tiết
-            document.getElementById("location").innerText = "Vị trí: " + (gData.address.suburb || gData.address.village || gData.address.city || "Ninh Bình");
+            document.getElementById("location").innerText = "Vị trí: " + (gData.address.suburb || gData.address.village || gData.address.city || gData.address.town || "Ninh Bình");
 
         } catch (e) { 
             console.log("Lỗi tải dữ liệu:", e);
@@ -80,15 +81,16 @@ function init() {
                 fetchData(pos.coords.latitude, pos.coords.longitude);
             },
             err => {
-                // Mặc định về Ninh Bình nếu người dùng không cho phép định vị
+                // Mặc định về Ninh Bình nếu không lấy được vị trí
                 fetchData(20.25, 105.97);
             }
         );
     }
 
-    // 5. Hiệu ứng khối 3D nảy sát đáy
+    // 5. Hiệu ứng khối 3D nảy sát đáy (Tầng 2 hiện/ẩn ngẫu nhiên)
     const wall = document.getElementById("block-wall");
     if (wall) {
+        wall.innerHTML = ""; // Xóa các khối cũ nếu có
         for (let i = 0; i < 35; i++) {
             const col = document.createElement("div");
             col.className = "column";
