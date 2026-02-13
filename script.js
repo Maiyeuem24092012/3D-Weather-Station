@@ -1,10 +1,17 @@
 function init() {
-    // 1. Cập nhật Đồng hồ hệ thống
+    // 1. Cập nhật Đồng hồ & Ngày tháng (Đã thêm đầy đủ chữ Ngày/tháng/năm)
     const updateTime = () => {
         const now = new Date();
+        // Hiển thị giờ 24h
         document.getElementById("display").innerText = now.toLocaleTimeString('vi-VN', { hour12: false });
+        // Hiển thị Thứ
         document.getElementById("day-of-week").innerText = now.toLocaleDateString('vi-VN', { weekday: 'long' });
-        document.getElementById("full-date").innerText = now.toLocaleDateString('vi-VN', { day: 'numeric', month: 'long', year: 'numeric' });
+        
+        // Tùy chỉnh hiển thị: Ngày ... tháng ... năm ...
+        const day = now.getDate();
+        const month = now.getMonth() + 1;
+        const year = now.getFullYear();
+        document.getElementById("full-date").innerText = `Ngày ${day} tháng ${month} năm ${year}`;
     };
     setInterval(updateTime, 1000); 
     updateTime();
@@ -23,15 +30,15 @@ function init() {
             drop.style.height = type === "rain" ? "20px" : "10px";
             if (type === "snow") drop.style.borderRadius = "50%";
             drop.style.animationDuration = (Math.random() * 2 + 1) + "s";
-            drop.style.filter = `hue-rotate(${Math.random() * 360}deg)`; // Tạo màu cầu vồng
+            drop.style.filter = `hue-rotate(${Math.random() * 360}deg)`; 
             container.appendChild(drop);
         }
     }
 
-    // 3. Lấy dữ liệu Thời tiết, Vị trí và AQI song song (Tăng tốc độ load)
+    // 3. Lấy dữ liệu Thời tiết, Vị trí và AQI song song
     async function fetchData(lat, lon) {
         try {
-            // Sử dụng Promise.all để gọi đồng thời 3 API, tránh treo phần AQI
+            // Gọi đồng thời 3 API để tránh treo dữ liệu
             const [wRes, aRes, gRes] = await Promise.all([
                 fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`),
                 fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi`),
@@ -45,14 +52,13 @@ function init() {
             // Cập nhật Nhiệt độ và Gió
             const temp = Math.round(wData.current_weather.temperature);
             const code = wData.current_weather.weathercode;
-            // Dùng innerHTML để hỗ trợ hiển thị ký hiệu độ °C từ CSS
             document.getElementById("temp").innerHTML = `${temp}<span class="deg-symbol">°C</span>`;
             document.getElementById("wind").innerText = wData.current_weather.windspeed;
 
-            // Kích hoạt hiệu ứng nếu có mưa/tuyết (weathercode >= 51)
+            // Kích hoạt hiệu ứng thời tiết
             if (code >= 51) createEffect(code > 70 ? "snow" : "rain");
 
-            // Cập nhật AQI và Trạng thái không khí
+            // Cập nhật AQI
             const aqi = aData.current.us_aqi;
             document.getElementById("aqi").innerText = aqi || "50";
             let quality = "Tốt";
@@ -69,7 +75,7 @@ function init() {
         }
     }
 
-    // 4. Xử lý Định vị và Bộ nhớ đệm (LocalStorage)
+    // 4. Định vị
     const sLat = localStorage.getItem("lat"), sLon = localStorage.getItem("lon");
     if (sLat && sLon) {
         fetchData(sLat, sLon);
@@ -80,17 +86,14 @@ function init() {
                 localStorage.setItem("lon", pos.coords.longitude);
                 fetchData(pos.coords.latitude, pos.coords.longitude);
             },
-            err => {
-                // Mặc định về Ninh Bình nếu không lấy được vị trí
-                fetchData(20.25, 105.97);
-            }
+            err => { fetchData(20.25, 105.97); } // Mặc định Ninh Bình
         );
     }
 
-    // 5. Hiệu ứng khối 3D nảy sát đáy (Tầng 2 hiện/ẩn ngẫu nhiên)
+    // 5. Hiệu ứng khối 3D sát đáy
     const wall = document.getElementById("block-wall");
     if (wall) {
-        wall.innerHTML = ""; // Xóa các khối cũ nếu có
+        wall.innerHTML = "";
         for (let i = 0; i < 35; i++) {
             const col = document.createElement("div");
             col.className = "column";
