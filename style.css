@@ -1,7 +1,7 @@
 body {
     background: #1a1b26;
     color: #c0caf5;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier New', Courier, monospace !important;
     margin: 0; 
     height: 100vh;
     display: flex; 
@@ -10,7 +10,7 @@ body {
     overflow: hidden;
 }
 
-/* Container chính dàn hàng ngang cho các khung Dashboard */
+/* Lớp bọc dàn hàng ngang chuyên nghiệp */
 .main-dashboard {
     display: flex;
     flex-direction: row;
@@ -20,10 +20,9 @@ body {
     justify-content: center;
     align-items: stretch;
     width: 95%;
-    max-width: 1100px;
+    max-width: 1300px;
 }
 
-/* Hiệu ứng Mưa/Tuyết rơi tự do */
 #weather-effect {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     pointer-events: none; z-index: 5;
@@ -39,29 +38,33 @@ body {
     to { transform: translateY(100vh); }
 }
 
-/* Khung viền chạy hiệu ứng cầu vồng */
+/* Khung viền Rainbow động */
 .card-rainbow {
     flex: 1;
     position: relative; 
-    padding: 4px; 
-    border-radius: 20px;
+    padding: 6px; 
+    border-radius: 25px;
     background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
     background-size: 400%; 
     animation: rainbow-border 8s linear infinite;
-    min-width: 320px;
+    min-width: 380px;
 }
 
 .card-content { 
     background: #1a1b26; 
-    padding: 30px; 
-    border-radius: 16px; 
+    padding: 45px; 
+    border-radius: 20px; 
     text-align: center; 
     height: 100%; 
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    font-family: 'Courier New', Courier, monospace; 
+}
+
+/* Ép font cho tất cả */
+.card-content * {
+    font-family: 'Courier New', Courier, monospace !important;
 }
 
 @keyframes rainbow-border {
@@ -70,49 +73,57 @@ body {
     100% { background-position: 0% 50%; }
 }
 
-/* Định dạng các thành phần văn bản */
+/* --- HIỆU ỨNG CHỮ RAINBOW (MỚI) --- */
+.rainbow-text {
+    background: linear-gradient(to right, #ef5350, #f48fb1, #7e57c2, #2196f3, #26c6da, #43a047, #eeff41, #f9a825, #ff5722);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 400% auto;
+    animation: rainbow-border 5s linear infinite; /* Dùng chung animation xoay màu */
+    display: inline-block;
+}
+
+/* Cỡ chữ to và có màu sắc */
 #display { 
-    font-size: 70px; 
+    font-size: 95px; 
     color: #7aa2f7; 
-    text-shadow: 0 0 15px rgba(122, 162, 247, 0.6); 
-    font-family: 'Courier New', Courier, monospace;
+    text-shadow: 0 0 20px rgba(122, 162, 247, 0.4); 
+    margin: 10px 0;
 }
 
 #temp { 
-    font-size: 65px; 
-    color: #ff9e64; 
+    font-size: 90px; 
     font-weight: bold; 
-    margin: 10px 0;
-    font-family: 'Courier New', Courier, monospace;
+    margin: 15px 0;
 }
 
-#day-of-week, #location {
-    font-size: 20px;
-    margin-bottom: 5px;
+#day-of-week, #location { 
+    font-size: 28px; 
+    margin-bottom: 12px;
+    letter-spacing: 1px;
 }
 
-#full-date, #desc {
-    font-size: 18px;
+#full-date, #desc { 
+    font-size: 24px; 
     color: #a9b1d6;
+    margin-top: 10px;
 }
 
 .deg-symbol { 
-    font-size: 40px; 
-    color: #bb9af7; 
+    font-size: 55px; 
     vertical-align: top; 
-    margin-left: 5px;
+    margin-left: 8px;
 }
 
 .info-grid { 
     display: flex; 
     justify-content: space-around; 
-    gap: 10px; 
-    margin: 20px 0; 
-    font-size: 16px;
-    font-family: 'Courier New', Courier, monospace;
+    gap: 15px; 
+    margin: 30px 0; 
+    font-size: 22px;
 }
 
-/* Khối 3D trang trí ở đáy màn hình */
+/* Khối 3D dưới đáy */
 #block-wall {
     position: absolute; bottom: 0; width: 100%;
     display: flex; justify-content: center; align-items: flex-end; gap: 5px; padding-bottom: 10px;
@@ -127,13 +138,9 @@ body {
 }
 .hidden { display: none; }
 
-/* Tự động chuyển về hàng dọc trên thiết bị di động */
 @media (max-width: 768px) {
-    .main-dashboard {
-        flex-direction: column;
-        align-items: center;
-    }
-    .card-rainbow {
-        width: 100%;
-    }
+    .main-dashboard { flex-direction: column; align-items: center; }
+    .card-rainbow { width: 100%; min-width: unset; }
+    #display { font-size: 65px; }
+    #temp { font-size: 60px; }
 }
