@@ -23,7 +23,7 @@ Mô tả: Một hệ thống Dashboard thời gian thực tích hợp đồng h�
 ## 📸 Demo Ảnh
 *(Dán link ảnh chụp màn hình Dashboard của bạn vào đây)*
 ## 🌐 Live Demo
-👉 [Xem Dashboard của tôi tại đây](https:/Maiyeuem24092012.github.io/3D-Weather-Station/)
+👉 Xem Dashboard của tôi tại đây: https://maiyeuem24092012.github.io/3D-Weather-Station/
 
 ---
 *Dự án được xây dựng với mục tiêu nâng cấp kỹ năng JavaScript và làm đẹp Profile GitHub.*
