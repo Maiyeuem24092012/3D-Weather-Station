@@ -1,7 +1,7 @@
 body {
     background: #1a1b26;
     color: #c0caf5;
-    font-family: 'Courier New', Courier, monospace; /* Đồng bộ phông chữ chính */
+    font-family: 'Courier New', Courier, monospace;
     margin: 0; 
     height: 100vh;
     display: flex; 
@@ -10,7 +10,7 @@ body {
     overflow: hidden;
 }
 
-/* Lớp bọc chính để dàn hàng ngang */
+/* Container chính dàn hàng ngang cho các khung Dashboard */
 .main-dashboard {
     display: flex;
     flex-direction: row;
@@ -23,7 +23,7 @@ body {
     max-width: 1100px;
 }
 
-/* Hiệu ứng Mưa/Tuyết Rainbow */
+/* Hiệu ứng Mưa/Tuyết rơi tự do */
 #weather-effect {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     pointer-events: none; z-index: 5;
@@ -39,7 +39,7 @@ body {
     to { transform: translateY(100vh); }
 }
 
-/* Khung Dashboard Rainbow */
+/* Khung viền chạy hiệu ứng cầu vồng */
 .card-rainbow {
     flex: 1;
     position: relative; 
@@ -61,7 +61,6 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* Ép tất cả các thẻ con dùng phông Courier New */
     font-family: 'Courier New', Courier, monospace; 
 }
 
@@ -71,7 +70,7 @@ body {
     100% { background-position: 0% 50%; }
 }
 
-/* Tinh chỉnh cỡ chữ đồng bộ */
+/* Định dạng các thành phần văn bản */
 #display { 
     font-size: 70px; 
     color: #7aa2f7; 
@@ -97,7 +96,6 @@ body {
     color: #a9b1d6;
 }
 
-/* Ký hiệu độ chuẩn không lỗi font */
 .deg-symbol { 
     font-size: 40px; 
     color: #bb9af7; 
@@ -105,7 +103,6 @@ body {
     margin-left: 5px;
 }
 
-/* Khu vực thông tin Gió và Khí nằm ngang */
 .info-grid { 
     display: flex; 
     justify-content: space-around; 
@@ -115,7 +112,7 @@ body {
     font-family: 'Courier New', Courier, monospace;
 }
 
-/* Khối 3D sát đáy */
+/* Khối 3D trang trí ở đáy màn hình */
 #block-wall {
     position: absolute; bottom: 0; width: 100%;
     display: flex; justify-content: center; align-items: flex-end; gap: 5px; padding-bottom: 10px;
@@ -130,7 +127,7 @@ body {
 }
 .hidden { display: none; }
 
-/* Responsive cho điện thoại */
+/* Tự động chuyển về hàng dọc trên thiết bị di động */
 @media (max-width: 768px) {
     .main-dashboard {
         flex-direction: column;
