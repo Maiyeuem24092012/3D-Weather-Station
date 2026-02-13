@@ -1,5 +1,5 @@
 function init() {
-    // 1. Cập nhật Đồng hồ & Ngày tháng (Định dạng: Ngày ... tháng ... năm ...) 
+    // 1. Cập nhật Đồng hồ & Ngày tháng (Đã sửa lỗi hiển thị tháng)
     const updateTime = () => {
         const now = new Date();
         // Hiển thị giờ 24h
@@ -7,9 +7,9 @@ function init() {
         // Hiển thị Thứ
         document.getElementById("day-of-week").innerText = now.toLocaleDateString('vi-VN', { weekday: 'long' });
         
-        // Tùy chỉnh hiển thị chi tiết: Ngày ... tháng ... năm ...
+        // Cập nhật Ngày ... tháng ... năm ...
         const day = now.getDate();
-        const month = now.getMonth() + 1;
+        const month = now.getMonth() + 1; // getMonth trả về 0-11 nên phải +1
         const year = now.getFullYear();
         document.getElementById("full-date").innerText = `Ngày ${day} tháng ${month} năm ${year}`;
     };
@@ -20,6 +20,11 @@ function init() {
     function createEffect(type) {
         const container = document.getElementById("weather-effect");
         if (!container) return;
+        
+        // Kiểm tra nếu hiệu ứng hiện tại giống loại mới thì không tạo lại để tránh giật lag
+        if (container.dataset.type === type) return;
+        container.dataset.type = type;
+        
         container.innerHTML = "";
         const count = type === "rain" ? 100 : 50;
         for (let i = 0; i < count; i++) {
@@ -38,6 +43,7 @@ function init() {
     // 3. Lấy dữ liệu Thời tiết, Vị trí và AQI song song (Tối ưu tốc độ)
     async function fetchData(lat, lon) {
         try {
+            // Sử dụng Promise.all để gọi đồng thời 3 API giúp load cực nhanh
             const [wRes, aRes, gRes] = await Promise.all([
                 fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`),
                 fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi`),
@@ -55,7 +61,12 @@ function init() {
             document.getElementById("wind").innerText = wData.current_weather.windspeed;
 
             // Kích hoạt hiệu ứng thời tiết dựa trên mã code
-            if (code >= 51) createEffect(code > 70 ? "snow" : "rain");
+            if (code >= 51) {
+                createEffect(code > 70 ? "snow" : "rain");
+            } else {
+                const container = document.getElementById("weather-effect");
+                if (container) container.innerHTML = ""; // Xóa hiệu ứng nếu trời đẹp
+            }
 
             // Cập nhật AQI và mô tả chất lượng không khí
             const aqi = aData.current.us_aqi;
@@ -65,8 +76,9 @@ function init() {
             if (aqi > 100) quality = "Kém";
             document.getElementById("desc").innerText = "Không khí: " + quality;
 
-            // Cập nhật Vị trí chi tiết từ OpenStreetMap
-            document.getElementById("location").innerText = "Vị trí: " + (gData.address.suburb || gData.address.village || gData.address.city || gData.address.town || "Ninh Bình");
+            // Cập nhật Vị trí chi tiết (Ưu tiên lấy tên khu vực nhỏ, nếu ở ISS thì hiện ISS)
+            const placeName = gData.address.suburb || gData.address.village || gData.address.city || gData.address.town;
+            document.getElementById("location").innerText = "Vị trí: " + (placeName || "Trạm ISS (???)");
 
         } catch (e) { 
             console.log("Lỗi tải dữ liệu:", e);
@@ -74,37 +86,34 @@ function init() {
         }
     }
 
-// 4. Định vị thông minh: Luôn lấy mới nhất (Ưu tiên ISS làm mặc định)
+    // 4. Định vị thông minh 3 tầng: Mới nhất -> Cũ -> ISS
     navigator.geolocation.getCurrentPosition(
         pos => {
             const lat = pos.coords.latitude;
             const lon = pos.coords.longitude;
             
-            // Cập nhật LocalStorage để phòng hờ trường hợp lần sau lỗi định vị
+            // Lưu lại vị trí thành công vào bộ nhớ
             localStorage.setItem("lat", lat);
             localStorage.setItem("lon", lon);
             
-            // Luôn gọi fetchData với tọa độ tươi mới nhất từ trình duyệt
             fetchData(lat, lon);
         },
         err => { 
-            // Nếu lỗi hoặc từ chối định vị (Block), kiểm tra xem bộ nhớ cũ có gì không
+            // Nếu lỗi, thử tìm vị trí cũ trong máy
             const oldLat = localStorage.getItem("lat");
             const oldLon = localStorage.getItem("lon");
             
             if (oldLat && oldLon) {
-                // Nếu có vị trí cũ trong máy, dùng nó để web không bị trắng dữ liệu
                 fetchData(oldLat, oldLon);
             } else {
-                // Nếu máy mới tinh, chưa lưu gì mà đã lỗi định vị -> Bay thẳng ra Trạm ISS
-                // Tọa độ Điểm Nemo (Nghĩa địa tàu vũ trụ ISS)
+                // Cuối cùng là dùng ISS mặc định
                 fetchData(-48.8767, -123.3933); 
             }
         },
         { 
-            enableHighAccuracy: true, // Ép lấy độ chính xác cao nhất
-            timeout: 10000,           // Chờ 10 giây để tìm vị trí
-            maximumAge: 0             // TUYỆT ĐỐI KHÔNG dùng vị trí cũ trong bộ nhớ trình duyệt
+            enableHighAccuracy: true, 
+            timeout: 10000, 
+            maximumAge: 0 
         }
     );
     
@@ -120,12 +129,12 @@ function init() {
         }
         setInterval(() => {
             document.querySelectorAll(".column").forEach(col => {
-                if (Math.random() > 0.7) col.lastChild.classList.toggle("hidden");
+                if (Math.random() > 0.8) { // Giảm tỉ lệ nảy để nhìn đỡ rối mắt
+                    if (col.lastChild) col.lastChild.classList.toggle("hidden");
+                }
             });
-        }, 1000);
+        }, 1500);
     }
 }
 
 window.onload = init;
-
-
