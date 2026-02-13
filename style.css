@@ -1,0 +1,69 @@
+body {
+    background: #1a1b26;
+    color: #c0caf5;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.main-dashboard {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    z-index: 10;
+    justify-content: center;
+}
+
+/* Hiệu ứng viền Rainbow */
+.card-rainbow {
+    position: relative;
+    padding: 4px;
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    background-size: 400%;
+    border-radius: 20px;
+    animation: rainbow-border 8s linear infinite;
+}
+
+.card-content {
+    background: #1a1b26;
+    padding: 25px;
+    border-radius: 16px;
+    text-align: center;
+    min-width: 320px;
+}
+
+@keyframes rainbow-border {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+#display { font-size: 70px; color: #7aa2f7; font-family: 'Courier New', monospace; text-shadow: 0 0 10px #7aa2f7; }
+#day-of-week { font-size: 20px; text-transform: uppercase; color: #bb9af7; }
+#temp { font-size: 50px; color: #ff9e64; font-weight: bold; margin: 5px 0; }
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 15px 0;
+    font-size: 18px;
+}
+
+/* Khối 3D dưới đáy */
+#block-wall {
+    position: absolute; bottom: 0; width: 100%;
+    display: flex; justify-content: center; align-items: flex-end; gap: 5px; padding-bottom: 10px;
+}
+.column { display: flex; flex-direction: column-reverse; gap: 4px; width: 25px; }
+.cube { width: 25px; height: 25px; border-radius: 4px; animation: cube-rainbow 5s infinite linear; }
+@keyframes cube-rainbow {
+    0% { background: #ff5555; }
+    50% { background: #50fa7b; }
+    100% { background: #ff79c6; }
+}
+.hidden { display: none; }

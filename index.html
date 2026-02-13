@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thành Đạt - Rainbow Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-dashboard">
+        <div class="card-rainbow">
+            <div class="card-content">
+                <div id="day-of-week">Thứ ...</div>
+                <div id="display">00:00:00</div>
+                <div id="full-date">Ngày ... tháng ...</div>
+            </div>
+        </div>
+
+        <div class="card-rainbow">
+            <div class="card-content">
+                <div id="location">Đang xác định vị trí...</div>
+                <div id="temp">--°C</div>
+                <div class="info-grid">
+                    <div>💨 Gió: <span id="wind">--</span> km/h</div>
+                    <div>🍃 Khí: <span id="aqi">--</span> (AQI)</div>
+                </div>
+                <div id="desc">Đang tải dữ liệu...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="block-wall"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
