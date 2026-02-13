@@ -1,5 +1,5 @@
 function init() {
-    // 1. Cập nhật Đồng hồ & Ngày tháng (Đã thêm đầy đủ chữ Ngày/tháng/năm)
+    // 1. Cập nhật Đồng hồ & Ngày tháng (Định dạng: Ngày ... tháng ... năm ...)
     const updateTime = () => {
         const now = new Date();
         // Hiển thị giờ 24h
@@ -7,7 +7,7 @@ function init() {
         // Hiển thị Thứ
         document.getElementById("day-of-week").innerText = now.toLocaleDateString('vi-VN', { weekday: 'long' });
         
-        // Tùy chỉnh hiển thị: Ngày ... tháng ... năm ...
+        // Tùy chỉnh hiển thị chi tiết: Ngày ... tháng ... năm ...
         const day = now.getDate();
         const month = now.getMonth() + 1;
         const year = now.getFullYear();
@@ -35,10 +35,9 @@ function init() {
         }
     }
 
-    // 3. Lấy dữ liệu Thời tiết, Vị trí và AQI song song
+    // 3. Lấy dữ liệu Thời tiết, Vị trí và AQI song song (Tối ưu tốc độ)
     async function fetchData(lat, lon) {
         try {
-            // Gọi đồng thời 3 API để tránh treo dữ liệu
             const [wRes, aRes, gRes] = await Promise.all([
                 fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`),
                 fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi`),
@@ -55,10 +54,10 @@ function init() {
             document.getElementById("temp").innerHTML = `${temp}<span class="deg-symbol">°C</span>`;
             document.getElementById("wind").innerText = wData.current_weather.windspeed;
 
-            // Kích hoạt hiệu ứng thời tiết
+            // Kích hoạt hiệu ứng thời tiết dựa trên mã code
             if (code >= 51) createEffect(code > 70 ? "snow" : "rain");
 
-            // Cập nhật AQI
+            // Cập nhật AQI và mô tả chất lượng không khí
             const aqi = aData.current.us_aqi;
             document.getElementById("aqi").innerText = aqi || "50";
             let quality = "Tốt";
@@ -66,7 +65,7 @@ function init() {
             if (aqi > 100) quality = "Kém";
             document.getElementById("desc").innerText = "Không khí: " + quality;
 
-            // Cập nhật Vị trí chi tiết
+            // Cập nhật Vị trí chi tiết từ OpenStreetMap
             document.getElementById("location").innerText = "Vị trí: " + (gData.address.suburb || gData.address.village || gData.address.city || gData.address.town || "Ninh Bình");
 
         } catch (e) { 
@@ -75,7 +74,7 @@ function init() {
         }
     }
 
-    // 4. Định vị
+    // 4. Xử lý Định vị (Ưu tiên bộ nhớ đệm LocalStorage)
     const sLat = localStorage.getItem("lat"), sLon = localStorage.getItem("lon");
     if (sLat && sLon) {
         fetchData(sLat, sLon);
@@ -86,11 +85,11 @@ function init() {
                 localStorage.setItem("lon", pos.coords.longitude);
                 fetchData(pos.coords.latitude, pos.coords.longitude);
             },
-            err => { fetchData(20.25, 105.97); } // Mặc định Ninh Bình
+            err => { fetchData(20.25, 105.97); } // Mặc định Ninh Bình nếu từ chối định vị
         );
     }
 
-    // 5. Hiệu ứng khối 3D sát đáy
+    // 5. Hiệu ứng khối 3D nảy ngẫu nhiên sát đáy
     const wall = document.getElementById("block-wall");
     if (wall) {
         wall.innerHTML = "";
