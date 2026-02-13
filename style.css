@@ -1,5 +1,5 @@
 body {
-    background: #1a1b26; /* */
+    background: #1a1b26; /* Màu Tokyonight */
     color: #c0caf5;
     font-family: 'Segoe UI', sans-serif;
     margin: 0;
@@ -15,9 +15,10 @@ body {
     flex-wrap: wrap;
     gap: 30px;
     z-index: 10;
+    justify-content: center;
 }
 
-/* Viền cầu vồng chạy liên tục */
+/* Viền Rainbow chạy liên tục */
 .card-rainbow {
     position: relative;
     padding: 4px;
@@ -41,11 +42,27 @@ body {
     100% { background-position: 0% 50%; }
 }
 
+/* Đồng bộ phông chữ */
+#display, #temp { 
+    font-family: 'Courier New', Courier, monospace; 
+}
+
 #display { 
     font-size: 70px; 
-    color: #7aa2f7; /* */
-    font-family: 'Courier New', monospace; 
+    color: #7aa2f7; 
     text-shadow: 0 0 10px #7aa2f7; 
+}
+
+#temp { 
+    font-size: 65px; 
+    color: #ff9e64; 
+    font-weight: bold;
+}
+
+.deg-symbol {
+    font-size: 40px;
+    color: #bb9af7;
+    vertical-align: top;
 }
 
 .info-grid {
@@ -53,18 +70,26 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: 10px;
     margin: 15px 0;
+    font-size: 18px;
 }
 
-/* Khối 3D nảy sát đáy */
+/* Dải khối 3D nảy sát đáy */
 #block-wall {
     position: absolute; bottom: 0; width: 100%;
     display: flex; justify-content: center; align-items: flex-end; gap: 5px; padding-bottom: 10px;
 }
+
 .column { display: flex; flex-direction: column-reverse; gap: 4px; width: 25px; }
-.cube { width: 25px; height: 25px; border-radius: 4px; animation: cube-rainbow 5s infinite linear; }
+
+.cube { 
+    width: 25px; height: 25px; border-radius: 4px; 
+    animation: cube-rainbow 5s infinite linear; 
+}
+
 @keyframes cube-rainbow {
     0% { background: #ff5555; }
     50% { background: #50fa7b; }
     100% { background: #ff79c6; }
 }
+
 .hidden { display: none; }
