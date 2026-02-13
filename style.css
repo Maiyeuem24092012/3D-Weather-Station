@@ -1,7 +1,7 @@
 body {
     background: #1a1b26;
     color: #c0caf5;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Courier New', Courier, monospace; /* Đồng bộ phông chữ chính */
     margin: 0; 
     height: 100vh;
     display: flex; 
@@ -13,9 +13,9 @@ body {
 /* Lớp bọc chính để dàn hàng ngang */
 .main-dashboard {
     display: flex;
-    flex-direction: row; /* Ép nằm ngang */
-    flex-wrap: wrap;    /* Tự xuống dòng trên điện thoại */
-    gap: 30px;          /* Khoảng cách giữa 2 khung */
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 30px;
     z-index: 10;
     justify-content: center;
     align-items: stretch;
@@ -41,14 +41,14 @@ body {
 
 /* Khung Dashboard Rainbow */
 .card-rainbow {
-    flex: 1; /* Hai khung chia đều chiều rộng */
+    flex: 1;
     position: relative; 
     padding: 4px; 
     border-radius: 20px;
     background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
     background-size: 400%; 
     animation: rainbow-border 8s linear infinite;
-    min-width: 320px; /* Độ rộng tối thiểu để không bị quá bé */
+    min-width: 320px;
 }
 
 .card-content { 
@@ -56,11 +56,13 @@ body {
     padding: 30px; 
     border-radius: 16px; 
     text-align: center; 
-    height: 100%; /* Đảm bảo 2 khung cao bằng nhau */
+    height: 100%; 
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    /* Ép tất cả các thẻ con dùng phông Courier New */
+    font-family: 'Courier New', Courier, monospace; 
 }
 
 @keyframes rainbow-border {
@@ -69,13 +71,12 @@ body {
     100% { background-position: 0% 50%; }
 }
 
-/* Đồng bộ Font chữ nhiệt độ và thời gian */
-#display, #temp { font-family: 'Courier New', Courier, monospace; }
-
+/* Tinh chỉnh cỡ chữ đồng bộ */
 #display { 
     font-size: 70px; 
     color: #7aa2f7; 
     text-shadow: 0 0 15px rgba(122, 162, 247, 0.6); 
+    font-family: 'Courier New', Courier, monospace;
 }
 
 #temp { 
@@ -83,6 +84,17 @@ body {
     color: #ff9e64; 
     font-weight: bold; 
     margin: 10px 0;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#day-of-week, #location {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+#full-date, #desc {
+    font-size: 18px;
+    color: #a9b1d6;
 }
 
 /* Ký hiệu độ chuẩn không lỗi font */
@@ -93,12 +105,14 @@ body {
     margin-left: 5px;
 }
 
+/* Khu vực thông tin Gió và Khí nằm ngang */
 .info-grid { 
     display: flex; 
     justify-content: space-around; 
     gap: 10px; 
     margin: 20px 0; 
-    font-size: 18px; 
+    font-size: 16px;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 /* Khối 3D sát đáy */
