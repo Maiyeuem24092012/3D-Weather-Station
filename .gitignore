@@ -1,0 +1,21 @@
+# Thư viện node (nếu sau này bạn dùng npm)
+node_modules/
+dist/
+
+# File cấu hình cá nhân của trình duyệt/hệ thống
+.DS_Store
+Thumbs.db
+
+# File log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Các file cấu hình IDE
+.vscode/
+.idea/
+*.swp
+*.bak
+
+# Quan trọng: Không đẩy các file chứa Key bí mật lên (nếu có)
+.env
