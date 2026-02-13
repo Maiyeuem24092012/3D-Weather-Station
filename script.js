@@ -74,21 +74,40 @@ function init() {
         }
     }
 
-    // 4. Xử lý Định vị (Ưu tiên bộ nhớ đệm LocalStorage)
-    const sLat = localStorage.getItem("lat"), sLon = localStorage.getItem("lon");
-    if (sLat && sLon) {
-        fetchData(sLat, sLon);
-    } else {
-        navigator.geolocation.getCurrentPosition(
-            pos => {
-                localStorage.setItem("lat", pos.coords.latitude);
-                localStorage.setItem("lon", pos.coords.longitude);
-                fetchData(pos.coords.latitude, pos.coords.longitude);
-            },
-            err => { fetchData(20.25, 105.97); } // Mặc định Ninh Bình nếu từ chối định vị
-        );
-    }
-
+// 4. Định vị thông minh: Luôn lấy mới nhất (Ưu tiên ISS làm mặc định)
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            
+            // Cập nhật LocalStorage để phòng hờ trường hợp lần sau lỗi định vị
+            localStorage.setItem("lat", lat);
+            localStorage.setItem("lon", lon);
+            
+            // Luôn gọi fetchData với tọa độ tươi mới nhất từ trình duyệt
+            fetchData(lat, lon);
+        },
+        err => { 
+            // Nếu lỗi hoặc từ chối định vị (Block), kiểm tra xem bộ nhớ cũ có gì không
+            const oldLat = localStorage.getItem("lat");
+            const oldLon = localStorage.getItem("lon");
+            
+            if (oldLat && oldLon) {
+                // Nếu có vị trí cũ trong máy, dùng nó để web không bị trắng dữ liệu
+                fetchData(oldLat, oldLon);
+            } else {
+                // Nếu máy mới tinh, chưa lưu gì mà đã lỗi định vị -> Bay thẳng ra Trạm ISS
+                // Tọa độ Điểm Nemo (Nghĩa địa tàu vũ trụ ISS)
+                fetchData(-48.8767, -123.3933); 
+            }
+        },
+        { 
+            enableHighAccuracy: true, // Ép lấy độ chính xác cao nhất
+            timeout: 10000,           // Chờ 10 giây để tìm vị trí
+            maximumAge: 0             // TUYỆT ĐỐI KHÔNG dùng vị trí cũ trong bộ nhớ trình duyệt
+        }
+    );
+    
     // 5. Hiệu ứng khối 3D nảy ngẫu nhiên sát đáy
     const wall = document.getElementById("block-wall");
     if (wall) {
@@ -108,4 +127,5 @@ function init() {
 }
 
 window.onload = init;
+
 
