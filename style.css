@@ -1,5 +1,5 @@
 body {
-    background: #1a1b26;
+    background: #1a1b26; /* */
     color: #c0caf5;
     font-family: 'Segoe UI', sans-serif;
     margin: 0;
@@ -15,10 +15,9 @@ body {
     flex-wrap: wrap;
     gap: 30px;
     z-index: 10;
-    justify-content: center;
 }
 
-/* Hiệu ứng viền Rainbow */
+/* Viền cầu vồng chạy liên tục */
 .card-rainbow {
     position: relative;
     padding: 4px;
@@ -42,19 +41,21 @@ body {
     100% { background-position: 0% 50%; }
 }
 
-#display { font-size: 70px; color: #7aa2f7; font-family: 'Courier New', monospace; text-shadow: 0 0 10px #7aa2f7; }
-#day-of-week { font-size: 20px; text-transform: uppercase; color: #bb9af7; }
-#temp { font-size: 50px; color: #ff9e64; font-weight: bold; margin: 5px 0; }
+#display { 
+    font-size: 70px; 
+    color: #7aa2f7; /* */
+    font-family: 'Courier New', monospace; 
+    text-shadow: 0 0 10px #7aa2f7; 
+}
 
 .info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
     margin: 15px 0;
-    font-size: 18px;
 }
 
-/* Khối 3D dưới đáy */
+/* Khối 3D nảy sát đáy */
 #block-wall {
     position: absolute; bottom: 0; width: 100%;
     display: flex; justify-content: center; align-items: flex-end; gap: 5px; padding-bottom: 10px;
