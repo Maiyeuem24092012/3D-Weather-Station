@@ -2,9 +2,25 @@ body {
     background: #1a1b26;
     color: #c0caf5;
     font-family: 'Segoe UI', sans-serif;
-    margin: 0; height: 100vh;
-    display: flex; justify-content: center; align-items: center;
+    margin: 0; 
+    height: 100vh;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
     overflow: hidden;
+}
+
+/* Lớp bọc chính để dàn hàng ngang */
+.main-dashboard {
+    display: flex;
+    flex-direction: row; /* Ép nằm ngang */
+    flex-wrap: wrap;    /* Tự xuống dòng trên điện thoại */
+    gap: 30px;          /* Khoảng cách giữa 2 khung */
+    z-index: 10;
+    justify-content: center;
+    align-items: stretch;
+    width: 95%;
+    max-width: 1100px;
 }
 
 /* Hiệu ứng Mưa/Tuyết Rainbow */
@@ -25,12 +41,27 @@ body {
 
 /* Khung Dashboard Rainbow */
 .card-rainbow {
-    position: relative; padding: 4px; border-radius: 20px;
+    flex: 1; /* Hai khung chia đều chiều rộng */
+    position: relative; 
+    padding: 4px; 
+    border-radius: 20px;
     background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
-    background-size: 400%; animation: rainbow-border 8s linear infinite;
+    background-size: 400%; 
+    animation: rainbow-border 8s linear infinite;
+    min-width: 320px; /* Độ rộng tối thiểu để không bị quá bé */
 }
 
-.card-content { background: #1a1b26; padding: 25px; border-radius: 16px; text-align: center; min-width: 320px; }
+.card-content { 
+    background: #1a1b26; 
+    padding: 30px; 
+    border-radius: 16px; 
+    text-align: center; 
+    height: 100%; /* Đảm bảo 2 khung cao bằng nhau */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
 
 @keyframes rainbow-border {
     0% { background-position: 0% 50%; }
@@ -38,12 +69,37 @@ body {
     100% { background-position: 0% 50%; }
 }
 
+/* Đồng bộ Font chữ nhiệt độ và thời gian */
 #display, #temp { font-family: 'Courier New', Courier, monospace; }
-#display { font-size: 70px; color: #7aa2f7; text-shadow: 0 0 10px #7aa2f7; }
-#temp { font-size: 65px; color: #ff9e64; font-weight: bold; }
-.deg-symbol { font-size: 40px; color: #bb9af7; vertical-align: top; }
 
-.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; font-size: 18px; }
+#display { 
+    font-size: 70px; 
+    color: #7aa2f7; 
+    text-shadow: 0 0 15px rgba(122, 162, 247, 0.6); 
+}
+
+#temp { 
+    font-size: 65px; 
+    color: #ff9e64; 
+    font-weight: bold; 
+    margin: 10px 0;
+}
+
+/* Ký hiệu độ chuẩn không lỗi font */
+.deg-symbol { 
+    font-size: 40px; 
+    color: #bb9af7; 
+    vertical-align: top; 
+    margin-left: 5px;
+}
+
+.info-grid { 
+    display: flex; 
+    justify-content: space-around; 
+    gap: 10px; 
+    margin: 20px 0; 
+    font-size: 18px; 
+}
 
 /* Khối 3D sát đáy */
 #block-wall {
@@ -52,9 +108,21 @@ body {
 }
 .column { display: flex; flex-direction: column-reverse; gap: 4px; width: 25px; }
 .cube { width: 25px; height: 25px; border-radius: 4px; animation: cube-rainbow 5s infinite linear; }
+
 @keyframes cube-rainbow {
     0% { background: #ff5555; }
     50% { background: #50fa7b; }
     100% { background: #ff79c6; }
 }
 .hidden { display: none; }
+
+/* Responsive cho điện thoại */
+@media (max-width: 768px) {
+    .main-dashboard {
+        flex-direction: column;
+        align-items: center;
+    }
+    .card-rainbow {
+        width: 100%;
+    }
+}
