@@ -1,6 +1,6 @@
 /**
  * Rainbow 3D Dashboard - Thành Đạt Profile
- * Bản gộp: Fix AQI + Fix Vị trí chính xác + Hiệu ứng Dynamic
+ * Bản gộp hoàn chỉnh: Fix AQI + Fix Vị trí chi tiết + Hiệu ứng Dynamic
  */
 function init() {
     // --- 1. ĐỒNG HỒ & ĐỔI MÀU NỀN THEO GIỜ ---
@@ -17,6 +17,7 @@ function init() {
         document.getElementById("full-date").innerText = `Ngày ${day} tháng ${month} năm ${year}`;
 
         const body = document.body;
+        // Tối ưu màu nền theo thời điểm trong ngày
         if (hours >= 6 && hours < 10) {
             body.style.background = "linear-gradient(135deg, #00b4db, #0083b0)"; 
         } else if (hours >= 17 && hours < 19) {
@@ -63,6 +64,7 @@ function init() {
     // --- 4. LẤY DỮ LIỆU THỜI TIẾT & VỊ TRÍ SONG SONG ---
     async function fetchData(lat, lon) {
         try {
+            // Sử dụng các nguồn API miễn phí chất lượng cao
             const [wRes, aRes, gRes] = await Promise.all([
                 fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`),
                 fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi`),
@@ -87,7 +89,7 @@ function init() {
                 }
             }
 
-            // --- FIX LỖI AQI ---
+            // --- XỬ LÝ AQI AN TOÀN ---
             const aqi = (aData && aData.current) ? aData.current.us_aqi : null;
             document.getElementById("aqi").innerText = aqi !== null ? aqi : "--";
             
@@ -99,23 +101,23 @@ function init() {
             }
             document.getElementById("desc").innerText = "Không khí: " + quality;
 
-            // --- FIX VỊ TRÍ CHI TIẾT ---
+            // --- XỬ LÝ VỊ TRÍ CHI TIẾT (Tránh bị nhảy vị trí) ---
             const addr = gData.address || {};
-            // Lấy từ cấp nhỏ đến lớn: Phường/Xã -> Quận/Huyện -> Tỉnh/TP
+            // Ưu tiên hiển thị: Phường/Xã -> Quận/Huyện -> Tỉnh/TP
             const place = addr.suburb || addr.quarter || addr.neighbourhood || addr.village || addr.town || addr.city || addr.county;
-            document.getElementById("location").innerText = "Vị trí: " + (place || "Đang xác định");
+            document.getElementById("location").innerText = "Vị trí: " + (place || "Ninh Bình");
 
         } catch (e) { 
-            console.error("Lỗi Fetch:", e);
+            console.error("Lỗi cập nhật dữ liệu:", e);
             document.getElementById("desc").innerText = "Lỗi kết nối dữ liệu";
         }
     }
 
     // --- 5. LOGIC ĐỊNH VỊ THÔNG MINH ---
     const getPosition = () => {
-        const geoOptions = {
+        const options = {
             enableHighAccuracy: true,
-            timeout: 10000,
+            timeout: 8000,
             maximumAge: 0
         };
 
@@ -125,7 +127,7 @@ function init() {
                 localStorage.setItem("lat", latitude);
                 localStorage.setItem("lon", longitude);
                 fetchData(latitude, longitude);
-                showStatus("Đã cập nhật vị trí GPS");
+                showStatus("Đã cập nhật vị trí thực tế");
             },
             err => { 
                 const oldLat = localStorage.getItem("lat");
@@ -134,22 +136,25 @@ function init() {
                     fetchData(oldLat, oldLon);
                     showStatus("Dùng vị trí từ bộ nhớ");
                 } else {
-                    fetchData(20.25, 105.97); // Mặc định Ninh Bình
-                    showStatus("Vị trí mặc định (NB)");
+                    // Mặc định về Ninh Bình nếu không lấy được GPS (Tránh hiện ISS lung tung)
+                    fetchData(20.25, 105.97); 
+                    showStatus("Vị trí mặc định (Ninh Bình)");
                 }
             },
-            geoOptions
+            options
         );
     };
 
     getPosition();
+
+    // Gán sự kiện cho nút vị trí
     const locBtn = document.getElementById("location");
     if (locBtn) {
         locBtn.style.cursor = "pointer";
         locBtn.onclick = getPosition;
     }
 
-    // --- 6. HIỆU ỨNG KHỐI 3D ---
+    // --- 6. HIỆU ỨNG KHỐI 3D RAINBOW ---
     const wall = document.getElementById("block-wall");
     if (wall) {
         wall.innerHTML = "";
@@ -169,4 +174,5 @@ function init() {
     }
 }
 
+// Khởi chạy khi trang sẵn sàng
 window.onload = init;
