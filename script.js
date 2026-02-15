@@ -1,6 +1,6 @@
 /**
  * Rainbow 3D Dashboard - Thành Đạt Profile
- * Đã tối ưu xử lý AQI và fix lỗi hiển thị
+ * Bản gộp: Fix AQI + Fix Vị trí chính xác + Hiệu ứng Dynamic
  */
 function init() {
     // --- 1. ĐỒNG HỒ & ĐỔI MÀU NỀN THEO GIỜ ---
@@ -66,7 +66,7 @@ function init() {
             const [wRes, aRes, gRes] = await Promise.all([
                 fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`),
                 fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi`),
-                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`)
             ]);
 
             const wData = await wRes.json();
@@ -87,7 +87,7 @@ function init() {
                 }
             }
 
-            // --- FIX LỖI AQI TẠI ĐÂY ---
+            // --- FIX LỖI AQI ---
             const aqi = (aData && aData.current) ? aData.current.us_aqi : null;
             document.getElementById("aqi").innerText = aqi !== null ? aqi : "--";
             
@@ -99,10 +99,11 @@ function init() {
             }
             document.getElementById("desc").innerText = "Không khí: " + quality;
 
-            // Cập nhật Vị trí
+            // --- FIX VỊ TRÍ CHI TIẾT ---
             const addr = gData.address || {};
-            const place = addr.suburb || addr.village || addr.city || addr.town || addr.county;
-            document.getElementById("location").innerText = "Vị trí: " + (place || "Bản đồ");
+            // Lấy từ cấp nhỏ đến lớn: Phường/Xã -> Quận/Huyện -> Tỉnh/TP
+            const place = addr.suburb || addr.quarter || addr.neighbourhood || addr.village || addr.town || addr.city || addr.county;
+            document.getElementById("location").innerText = "Vị trí: " + (place || "Đang xác định");
 
         } catch (e) { 
             console.error("Lỗi Fetch:", e);
@@ -110,28 +111,34 @@ function init() {
         }
     }
 
-    // --- 5. LOGIC ĐỊNH VỊ ---
+    // --- 5. LOGIC ĐỊNH VỊ THÔNG MINH ---
     const getPosition = () => {
+        const geoOptions = {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        };
+
         navigator.geolocation.getCurrentPosition(
             pos => {
                 const { latitude, longitude } = pos.coords;
                 localStorage.setItem("lat", latitude);
                 localStorage.setItem("lon", longitude);
                 fetchData(latitude, longitude);
-                showStatus("Đã cập nhật vị trí");
+                showStatus("Đã cập nhật vị trí GPS");
             },
             err => { 
                 const oldLat = localStorage.getItem("lat");
                 const oldLon = localStorage.getItem("lon");
                 if (oldLat && oldLon) {
                     fetchData(oldLat, oldLon);
-                    showStatus("Dùng vị trí cũ");
+                    showStatus("Dùng vị trí từ bộ nhớ");
                 } else {
-                    fetchData(20.25, 105.97); // Mặc định Ninh Bình cho "hợp lý"
-                    showStatus("Vị trí mặc định");
+                    fetchData(20.25, 105.97); // Mặc định Ninh Bình
+                    showStatus("Vị trí mặc định (NB)");
                 }
             },
-            { enableHighAccuracy: true, timeout: 5000 }
+            geoOptions
         );
     };
 
